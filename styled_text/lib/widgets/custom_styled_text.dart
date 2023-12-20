@@ -218,6 +218,8 @@ class _CustomStyledTextState extends State<CustomStyledText> {
   Widget build(BuildContext context) {
     if (_textSpans == null) return const SizedBox();
 
+    //print('Text span: ${_textSpan.toPlainText()}');
+
     final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
     TextStyle? effectiveTextStyle = widget.style;
     if (widget.style == null || widget.style!.inherit)
@@ -231,7 +233,8 @@ class _CustomStyledTextState extends State<CustomStyledText> {
       children: [_textSpans!],
     );
 
-    return widget.builder.call(context, span);
+    // wrap the label in a single sematic reading the whole text.
+    return Semantics(value: _textSpans?.toPlainText(includeSemanticsLabels: false), child: widget.builder.call(context, span));
   }
 }
 
@@ -338,10 +341,18 @@ class _TextNode extends _Node {
     required BuildContext context,
     GestureRecognizer? recognizer,
   }) {
+
+    var sematicText = text != null ? '' : null;
+
+    if (recognizer != null) { 
+      sematicText = text;
+    }
+    
     return TextSpan(
       text: text,
       children: createChildren(context: context, recognizer: recognizer),
       recognizer: recognizer,
+      semanticsLabel: sematicText,
     );
   }
 }
